@@ -1,0 +1,8 @@
+# Ignore everything
+*
+
+# But not these
+!*.tex
+!*.pdf
+!*.bib
+!.gitignore
