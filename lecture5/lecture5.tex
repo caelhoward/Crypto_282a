@@ -1,0 +1,54 @@
+\documentclass[11pt]{article}
+
+% Prefix for numedquestion's
+\newcommand{\questiontype}{Question}
+
+
+% Use this if your "written" questions are all under one section
+% For example, if the homework handout has Section 5: Written Questions
+% and all questions are 5.1, 5.2, 5.3, etc. set this to 5
+% Use for 0 no prefix. Redefine as needed per-question.
+\newcommand{\writtensection}{0}
+
+\usepackage{amsmath, amsfonts, amsthm, amssymb}  % Some math symbols
+\usepackage{mathtools}
+
+\usepackage{centernot}
+\usepackage{mathtools}
+
+\setlength{\parindent}{0pt}
+
+\begin{document}
+
+\textbf{Computational Zero-Knowledge:}
+$$S^{(V^*)}(x) \overset{\sim}{=} [P \leftrightarrow V(x)]$$
+View of the two are the same as msg of $P$ and $V^*$ with $V^*$'s randomness.
+
+\section{Commitment Protocol}
+\textbf{Commitment Protocol}: An interactive protocol that consists of the commitment phase and open phase satisfying two properties:
+\begin{itemize}
+    \item Binding: After the commit protocol terminiates, the commiter can only open $b$ in 1 way.
+    \item Hiding: After the commit phases is over, any PPT receiver cannot predict bit better than $\frac{1}{2} + \text{negl}$
+\end{itemize}
+
+\section{Graph 3-Coloring}
+Given a graph $G$, we say it is \textbf{3-colorable} if we can assign colors to each node such that for all $(u,v) \in E$, $u$ and $v$ are different colors.
+
+\subsection{ZK Proof for 3-Color}
+Given a graph $G$, we have the following protocol to demonstrate that $G \in $ 3-Color:
+\begin{enumerate}
+    \item The prover $P$ creates a random permutation shuffling the colors from one to another randomly. (exp. Red $\rightarrow$ Blue). The prover secretly commits to this new three coloring and sends commitments to $V$.
+    \item $V$ selects a random edge $e = (u,v)$ and sends their selection back to $P$.
+    \item $P$ decommits nodes $u$ and $v$ to $V$ who can see that they are different colors.
+    \item This process is repeated $k$ times.
+\end{enumerate}
+\textbf{Completeness:} is clear from the inspection.
+
+\textbf{Soundness:} Consider some $G \notin $ \textbf{3-Color}. Then, $\exists e = (u,v) \in E$ where $(u,v)$ are the same color. Since $V$ selects a random edge $e'$, the probability that they choose this edge is $\frac{1}{|E|}$. Therefore the probability that $P$ can successfully fool the verifier is:
+\begin{align*}
+    (1-\frac{1}{|E|})^k
+\end{align*}
+Which for $k = |E|$ is $1/e^{|E|}$.
+
+
+\end{document}
