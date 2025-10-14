@@ -124,12 +124,12 @@ With this idea, we have the following ZKIP for Graph Isomorphisms:
     \item Firstly, $P$ generates $(A_0,A_1)$ from $G_0$ and sends them over to $V$.
     \item $V$ chooses a random bistring $B = b_1...b_k$ and commits to it by doing the following.
     \begin{enumerate}
-        \item If $b_i = 0$, send commitment pair $(Z_{2i-1},Z_{2i})$ as random permutations $(\pi_{2i-1}(G_0),\pi_{2i}(G_1))$.
-        \item If $b_i = 1$, send the pair as $(\pi_{2i-1}(G_1), \pi_{2i}(G_0))$.
+        \item If $b_i = 0$, send commitment pair $(Z_{2i-1},Z_{2i})$ as random permutations $(\pi_{2i-1}(A_0),\pi_{2i}(A_1))$.
+        \item If $b_i = 1$, send the pair as $(\pi_{2i-1}(A_1), \pi_{2i}(A_0))$.
     \end{enumerate}
     Each of the $k$ pairs is sent to $P$.
     \item $P$ sends $H_1...H_n$, which are all random permutations of $G_0$, to $V$.
-    \item $V$ opens the commitments by sending the permutations that maps pair $(Z_{2i-1},Z_2i)$ to $(G_0,G_1)$ in the case that $b_i = 0$ and to $(G_1,G_0)$ if $b_i = 1$. Notice, that if they can send a permutation $\Pi$ that cheats, then they used a permutation from $G_0 \rightarrow Z_i$, but were able to come up with proof permutation $\pi$ from $Z_i \rightarrow G_1$ meaning that they must know the permutation from $G_0 \rightarrow G_1$ to cheat.
+    \item $V$ opens the commitments by sending the permutations that maps pair $(Z_{2i-1},Z_{2i})$ to $(A_0,A_1)$ in the case that $b_i = 0$ and to $(A_1,A_0)$ if $b_i = 1$. Notice, that if they can send a permutation $\Pi$ that cheats, then they used a permutation from $A_0 \rightarrow Z_i$, but were able to come up with proof permutation $\pi$ from $Z_i \rightarrow A_1$ meaning that they must know the permutation from $A_0 \rightarrow A_1$ to cheat.
     \item After receiving the commitment for all $k$ pairs, $P$ sends the proof that $A_0 \cong A_1$ as well as the $k$ bits that correspond to $B$ selected by the verifier. The reason for the proof that $A_0 \cong A_1$ is that if the two graphs are not isomorphic, then the prover could discover $b_i$ simply by testing $Z_i$ against $A_0$ and $A_1$. Since they are isomorphic, the prover has no way of telling which bit was selected by $V$ as each $Z_i$ is a random permutation of $G_0$ and $G_1$. 
 \end{enumerate}
 
@@ -149,4 +149,10 @@ In step 4 above, it assumes that the verifier is honest, however, since perfect 
     \item Rewind back to just before sending all $k$ $H$ graphs and send them all as permuations of $A_1$.
     \item Now, the verifier cannot distinguish these as different from the previous sequence of $H$'s since the isomorphic properties mean that all permutations are equally likely. Therefore, there is not way for them to know not to cheat again. This means that for some $Z_i$ that they sent a proof for that mapped from $A_0$, with high probability they now send a proof that it maps to $A_1$ (In the case they do not cheat this time, redo the entire run from the start w/ new randomness). If this is the case, the simulator now has $\pi^0_{i}, \pi^1_{i}$ that maps $Z_i$ to both $H_0$ and $H_1$ respectively. In this case, the simulator can now map $G_0 \rightarrow H_0 \rightarrow Z_i \rightarrow H_1 \rightarrow G_1$, meaning they have $G_0 \rightarrow G_1$, which allows them to manually compute everything since they have the isomorphism between $G_0$ and $G_1$. Therefore, no matter what bits $V$ sends, the simulator now has the ability to make the permuation from $G_{1-b} \rightarrow G_{b} \rightarrow A_b$.
 \end{enumerate}
+
+\textbf{Extra notes on protocol}
+\begin{itemize}
+    \item \textbf{Why make both $A_0,A_1$ from $G_0$}: If $A_0 = \pi(G_0)$ and $A_1 = \pi(G_1)$, the protocol would run the exact same (Since identical distributions). However, the simulator would have to prove that $A_0$ and $A_1$ are isomorphic in step $4$, which would not be possible for a PPT simulator \textit{unless} it learns of the isomorphism between $G_0$ and $G_1$ which it does in the cheating verifier model where it does end up constructing $A_b$ from $G_b$.
+    \item \textbf{Why are commitments made from $A_0,A_1$}: This protocol would maintain IP properties if the verifier simply made its commitments $(Z_{2i-1},Z_{2i})$ from $(G_0,G_1)$, but the prover would have to demonstrate isomorphism between $G_0$ and $G_1$ to maintain soundness, which reveals the isomorphism. If they did not, then if $G_0$ and $G_1$ were non-isomorphic, the prover could just determine $b$ by finding which $G_b$ $Z_i$ was isomorphic to.
+\end{itemize}
 \end{document}

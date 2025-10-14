@@ -33,6 +33,9 @@ View of the two are the same as msg of $P$ and $V^*$ with $V^*$'s randomness.
 
 \section{Graph 3-Coloring}
 Given a graph $G$, we say it is \textbf{3-colorable} if we can assign colors to each node such that for all $(u,v) \in E$, $u$ and $v$ are different colors.
+\vspace{1em}
+
+This problem is NP-complete. The problem of Circuit satisfiability is NP-Complete. Using 3-coloring, we can create gadgets that represent Or, And, and Not gates. Since these gates are turing complete, we can convert any circuit into a corresponding graph, such that one color represents $0$, another represents $1$, and the third color is used to assist with the gates. This way we know if the graph is 3-colorable, then the circuit it represents is satisfiable.
 
 \subsection{ZK Proof for 3-Color}
 Given a graph $G$, we have the following protocol to demonstrate that $G \in $ 3-Color:
@@ -50,5 +53,57 @@ Given a graph $G$, we have the following protocol to demonstrate that $G \in $ 3
 \end{align*}
 Which for $k = |E|$ is $1/e^{|E|}$.
 
+\subsection{Simulator for Protocol}
+To demonstrate this protocol is Zero Knowledge, we will create simulator $S$ which does the following:
+\begin{enumerate}
+    \item The simulator will pick a random edge $e$ and commit two different colors to the edge's nodes.
+    \item If the verifier asks to reveal any edge that is not $e$, rewind the tape and try again.
+    \item Repeat until verifier accepts, since each attempt has a $1/|E|$ chance of succeeding, it will take approximately $k \cdot |E|$ tries to succeed. 
+\end{enumerate}
+
+\section{Blum's Protocol for Hamiltonian Cycle}
+\textbf{Hamiltonian Cycle} is a decision problem that asks if there exists a simple cycle of length $n$ inside of graph $G$. This problem is NP-Complete as one can map an instance of $3$-Sat to an instance of this problem. The following protocol is a ZK proof for verifying if $G \in $ Ham-Cylce:
+\begin{enumerate}
+    \item Prover $P$ picks a random permutation $\pi$ and commits an adjacency matrix of $\pi(G)$ to $V$.
+    \item $V$ selects a random $b \overset{\$}{\leftarrow} \{0,1\}$ and sends $b$ to $P$.
+    \item If $P$ obtains $0$, it opens the entire adjacency matrix and sends it to $V$, along with the permutation of $\pi^{-1}$ that maps the adjacency matrix it received back to $G$. If $P$ obtains $1$, it decommits the permuted cycle to $V$.
+    \item $V$ checks $P$'s decommitments and verifies that if $b=0$, it properly permutes back to $G$, and if $b=1$, $P$ correctly decommited a single $1$ in every row and column.
+\end{enumerate}
+\textbf{Notes on Protocol}:
+
+An adjacency matrix is a 0/1 matrix that represents an outgoing edge from vertex $i$ to vertex $j$, which would result in something like $adj[i][j] = 1$. Since a hamiltonian cycle visits each vertex in the graph exactly once other than the starting vertex, there are $n$ edges that exist, each starting at a unique source vertex and ending at a unique destination vertex. Therefore, if there exists a hamiltonian cycle in a graph, the adjaceny matrix can illustrate this by presenting $n$ entries of $1$'s such that each is the only 1 in its column and row.
+\vspace{1em}
+
+\textbf{Completeness:} In the case that $V$ returns $0$, it is clear that $P$ can decommit each entry and also send $V$ $\pi^{-1}$. In the case that $V$ sends $1$, since there exists a Hamiltonian Path in $G$, there must also exists one in $\pi(G)$. Therefore, there must be some combination of $n$ 1's such that each $1$ is unique in its row and column. This is what $P$ decommits to demonstrate there must have been a cycle in the original $G$.
+\vspace{1em}
+
+\textbf{Soundness:} Consider a graph $G$ that does not have a Hamiltonian cycle. This means that you cannot find $n$ entries in the matrix that demonstrate a hamiltonian cycle. Therefore, whatever commitment you send to $V$ can be either:
+\begin{enumerate}
+    \item A permutation of $G$ without a hamiltonian cycle
+    \item A adjacency matrix with a hamiltonian cycle that is not a permutation of $G$.
+\end{enumerate}
+Therefore, $P$ can only correctly respond to at most $1$ $b$ request from $V$, meaning that the probability it passes $k$ rounds of this protocol is $1/2^k$.
+
+\section{Commitment Protocols}
+One Way Functions: Functions that are easy to compute and hard to invert.
+$$x \overset{\$}{\leftarrow} X, f(x) = y \text{ is easy.}$$
+$$\forall y, \text{ calculating } f^{-1}(y) \text{ is hard}$$
+
+For example, we consider factoring to be a hard problem, so given two large primes $p,q$, calculating $N = p \cdot q$ is easy, but finding $p,q$ given $N$ is hard.
+
+\subsection{Implications of Existence}
+We have the following relation where each statement is implied by all following statements.
+\begin{enumerate}
+    \item $P \neq NP$, or in other words, there exists some hard problems.
+    \item Average $P \neq$ Average $NP$, or there exists hard problems that are easy to sample.
+    \item $\exists$ One Way Functions 
+\end{enumerate}
+\subsection{Definition of One Way Function}
+A one way function can be loosely defined as follows. There exists a challenger and adversary such that if the challenge sends the adversary $y=f(x)$ for a random $x \leftarrow X$, then the adversary wins if it can find an $x'$ such that $y = f(x')$. We say a function $f$ is one-way if the adversaries chances of winning quickly approaches 0 as $|x| = k$ increases.
+
+\subsubsection{Formal Definition}
+A function $f$ is one way if
+$$\forall k, \forall A^{*} \in \text{PPT}, \forall c, \text{Pr}[A^*(f(x),1^n) \in f^{-1}(f(x))] < \frac{1}{k^c}$$
+This is saying, for all values of $k$ (length of x), and for all adversaries $A^*$, the probability that $A^*$ can find some $x'$ where $f(x') = f(x)$ descreases faster than the inverse of any polynomial of $k$.
 
 \end{document}
