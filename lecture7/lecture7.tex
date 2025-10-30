@@ -95,11 +95,11 @@ To demonstrate the entire algorithm happens with non-negligible probability, we 
     &Pr[x \text{ is good}]\cdot Pr[\text{Correctly generate }m\ r\text{'s}] \cdot Pr[\text{All }x\text{'s are correct}]\\
     &= \frac{\epsilon(n)}{2} \cdot \frac{2\epsilon(n)^2}{n} \cdot \frac{1}{2}
 \end{align*}
-Since the product of negible functions are negligible, our algorithm suceeds with non-negligible probability given $A_b$ has an advantage.
+Since the product of non-negible functions are non-negligible, our algorithm suceeds with non-negligible probability given $A_b$ has an advantage.
 
 \section{Pseudo Random Generator (PRG)}
-Pseudo random generators are functions that take in a short, truly random seed $s$ and generates an output of poly-many bits $R(s)$ such that the output looks random. We say that a PRG $R$ is secure if it is indistinguishable from a truly random string if its output on random seed $s$ cannot be differentiated by any polynomial time adversary. Formally:
-$$\forall A \in PPT, \forall c, |\underset{s \leftarrow \$}{Pr[R(s) = 1]} - \underset{r \leftarrow \$}{Pr[A(r) = 1]}| < \frac{1}{n^c}$$
+Pseudo random generators are functions that take in a short, truly random seed $s$ and generates an output of poly-many bits $R(s)$ such that the output looks random. We say that a PRG $R$ is secure if it is indistinguishable from a truly random string, that is, if its output on random seed $s$ cannot be differentiated by any polynomial time adversary. Formally:
+$$\forall A \in PPT, \forall c, |\underset{s \leftarrow \$}{Pr}[R(s) = 1] - \underset{r \leftarrow \$}{Pr[}A(r) = 1]| < \frac{1}{n^c}$$
 This is simulated in a game of sorts where $A$ is passed a string that was either generated completely randomly, or generated from random seed $s$ and PRG $R$. We say that the probability that $A$ can guess which of these two events happened is less that $1/2 + negl$.
 \subsection{Example PRG}
 We have the following PRG that can take an input $x$ and produces outputs of length $|x| + 1$ using one way function $f$. It uses a fixed random $r$ and outputs $f(x) | <x,r>$. The reason this is a PRG is because if an adversary $A$ had an advantage over $R$, it would also have an advantage over the hardcore-predicate function, which we proved is not possible.
@@ -111,14 +111,14 @@ $$\forall A \in PPT, \forall c, |\underset{x\leftarrow X_n}{Pr}[A(x) = 1]-\under
 \textbf{Claim.} Computational indistinguishability over polynomially many samples $\Longleftrightarrow$ computational indistinguishability over one sample.
 \vspace{1em}
 
-We show that if there exists an $A$ that has a non-negligble advantage $\epsilon(n)$ given $m$ samples, then there exists an $A'$ that has a non-neglible advantage $\epsilon(n)/m$ on a single sample.
+We show that if there exists an $A$ that has a non-negligble advantage $\epsilon(n)$ given $m$ samples, then there exists an $A'$ that has a non-neglible advantage at least $\epsilon(n)/m$ on a single sample.
 \vspace{1em}
 
-Consider $A$ that either gets $x_1,...,x_n$ from $X$ or $y_1,...,y_n$ from $Y$ and can distinguish between the two with $\epsilon(n)$ advantage. Firstly, observe that for this to be the case, then with $Pr[A(x_1,...x_n) = 1] = p$ and $Pr[A(y_1,...,y_n)=1]=q$, we have $p-q = \epsilon(n)$. Now, we define $n$ adversaries $A_i$ that independently samples from $Y$ and $X$ and returns:
+Consider $A$ that either gets $x_1,...,x_n$ from $X$ or $y_1,...,y_n$ from $Y$ and can distinguish between the two with $\epsilon(n)$ advantage. Firstly, observe that for this to be the case, then with $Pr[A(x_1,...x_n) = 1] = p$ and $Pr[A(y_1,...,y_n)=1]=q$, we have $|p-q| = \epsilon(n)$. Now, we define $n$ adversaries $A_i$ that independently samples from $Y$ and $X$ and returns:
 $$A(y_1,...,y_{i-1},x_{i},...,x_n)$$
 Consider each $A_i$ which outputs $1$ with probability $p_i$. We have the following summation:
-$$\sum_{i=1}^{n-1} (Pr[A_i=1]-Pr[A_{i+1}=1]) = p-q$$
-The claim is that there exists at least one $(A_i,A_{i+1})$ pair where $p_i - p_{i+1}$ is at least $\epsilon(n)/m$. The proof is by contradiction, assume that all $p_i - p_{i+1}$ were less that $\epsilon(n)/m$. The the above summation would be strictly less that $\epsilon = p-q$ showing the assumption is false. This means that for that $A_i, A_{i+1}$ pair, we can construct $A'$ as follows.
+$$|\sum_{i=1}^{n-1} (Pr[A_i=1]-Pr[A_{i+1}=1])| = |p-q|$$
+The claim is that there exists at least one $(A_i,A_{i+1})$ pair where $p_i - p_{i+1}$ is at least $\epsilon(n)/m$. The proof is by contradiction, assume that all $p_i - p_{i+1}$ were less that $\epsilon(n)/m$. The the above summation would be strictly less that $\epsilon(n) = p-q$ showing the assumption is false. This means that for that $A_i, A_{i+1}$ pair, we can construct $A'$ as follows.
 \begin{enumerate}
     \item Randomly sample $i$ $y$'s from $Y$ and $n-i-1$ $x$'s from $X$.
     \item Return $A(y_1,..,y_{i},\mu,x_{i+1},...,x_n)$
