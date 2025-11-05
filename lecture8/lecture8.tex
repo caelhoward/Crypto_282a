@@ -115,4 +115,29 @@ Plugging $q$ back into the orginal equation we get:
     &\geq \frac{1}{2} + \epsilon(n)
 \end{align*}
 
+\section{Commitment protocol From PRG}
+The following commitment scheme uses a PRG that takes a seed of length $n$ and outputs a pseudorandom value of length $3n$. Formally we have:
+$$G: \{0,1\}^n \rightarrow \{0,1\}^3n$$
+The commitment scheme is performed as follows:
+\begin{enumerate}
+    \item Receiver $R$ generates a random length $3n$ bitstring $r$ and sends it to commiter $C$.
+    \item Commiter generates random seed $s$ of length $n$ and commits $G(s)$ if they want to commit a $0$ and $G(s) \oplus r$ if they want to commit a $1$.
+    \item The commiter decommits by sending $r$.
+\end{enumerate}
+\textbf{Hiding}
+
+First, to demonstrate the \textbf{computational} hiding property of the protocol we consider an adversary $A$ that can determine if the commitment $c$ is either $G(s)$ or $G(s) \oplus r$. Observe that $G(s) \oplus r$ is a random bitstring. Therefore, the receiver must be able to distinguish $G(s)$ from a uniform random string $G(s) \oplus r$ to be able to break the hiding property of the protocol which is not possible since $G$ is a $PRG$
+\vspace{1em}
+\newpage
+\textbf{Binding}
+
+To demonstrate the \textbf{statistically} binding property of this protocol we have consider what must be possible for the commiter $C$ to cheat. For this to be possible, $C$ must find two inputs $s$ and $s'$ such that either:
+\begin{itemize}
+    \item $G(s) = G(s') \oplus r$
+    \item $G(s)\oplus r = G(s')$
+\end{itemize}
+In otherwords there must be two inputs $s$ and $s'$ such that $$G(s) \oplus G(s') = r$$
+We demonstrate that the probability that this can be possible is at most negligible. Firstly, we observe that the codomain of this PRG is $2^{2n}$ times larger than the domain. Because of this, there can be at most $2^n/2^{3n} = 1/2^{2n}$ fraction of the codomain values can be mapped to. Since it is clear that
+$$\underset{r \leftarrow \$}{Pr}[\exists x\ G(x) = r] \geq \underset{r \leftarrow \$}{Pr}[\exists x,y, x \neq y\ |\ G(x) = G(y) =r]$$
+It is clear that if $R$ chooses a random $3n$ length value $r$, then the probability that $C$ can cheat is negligible.
 \end{document}
